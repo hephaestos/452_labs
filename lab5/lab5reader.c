@@ -17,30 +17,40 @@ int main() {
 	signal(SIGINT, sig_handler);
     int shmId;
     char *shmPtr;
-    char *turnPtr;
+    char *shmTurnPtr;
     int keyId = 70;
 	key_t shmKey = ftok("shmtext", keyId);
 	char readString[MAXMESSAGESIZE];
+    int turn = 1;
+    int limiter = sizeof(int);
 
     if ((shmId = shmget(shmKey, FOO, 0666)) < 0) {
 		perror ("Can't get Shared Memory ID\n");
 		exit(1);
 	}
-    if ((turnPtr = shmat(shmId, NULL, 0)) == (char*) -1) {
+    if ((shmTurnPtr = shmat(shmId, NULL, 0)) == (char*) -1) {
 		perror ("Can't attach to Shared Memory\n");
         exit (1);
     }
-    shmPtr = turnPtr + sizeof(int);
+    shmPtr = shmTurnPtr + sizeof(int);
 
 	do {
-        //if() //check if the turn pointer is the shared address we need
-        strcpy(readString, shmPtr);
-		printf("String [%s] read from Shared Memory\n", readString);
-        shmPtr = shmPtr + MAXMESSAGESIZE;
-        //sleep(2);
-        //}
+        if(*shmTurnPtr == turn) { //check if turns match
+            //printf("Writer turn [%d]\nReader turn[%d]\n", *shmTurnPtr, turn);
+            strcpy(readString, shmPtr);
+		    printf("String [%s] read from Shared Memory\n", readString);
+            shmPtr = shmPtr + MAXMESSAGESIZE;
+            limiter = limiter + MAXMESSAGESIZE;
+            if (limiter >= 4095) {
+                //limiter = sizeof(int);
+                //shmPtr = (char*)limiter;
+                //strcpy(shmPtr,(char*)limiter);
+            }
+            turn++;
+            
+            //sleep(1);
+        }
 	} while(1);
-
 	return 0;
 }
 
