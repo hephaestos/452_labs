@@ -36,18 +36,21 @@ int main() {
 
 	do {
         if(*shmTurnPtr == turn) { //check if turns match
-            //printf("Writer turn [%d]\nReader turn[%d]\n", *shmTurnPtr, turn);
+            printf("Writer turn [%d]\nReader turn[%d]\n", *shmTurnPtr, turn);
             strcpy(readString, shmPtr);
 		    printf("String [%s] read from Shared Memory\n", readString);
             shmPtr = shmPtr + MAXMESSAGESIZE;
             limiter = limiter + MAXMESSAGESIZE;
-            if (limiter >= 4095) {
-                //limiter = sizeof(int);
-                //shmPtr = (char*)limiter;
-                //strcpy(shmPtr,(char*)limiter);
+            if (turn >= 127) {
+                turn = 0;
             }
-            turn++;
-            
+            // printf("LIMIT: [%d]\n", limiter);
+            // if (limiter >= 4095) {
+            //     printf("limit hit!\n");
+            //     limiter = sizeof(int);
+            //     shmPtr = shmTurnPtr + sizeof(int);
+            // }   
+            turn++;          
             //sleep(1);
         }
 	} while(1);
