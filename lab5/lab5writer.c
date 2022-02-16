@@ -23,6 +23,8 @@ int main () {
     char enteredString[MAXMESSAGESIZE];
     int limiter = sizeof(int);
 
+    //printf("Limit Size = %d\n",limiter);
+
     if ((shmId = shmget (shmKey, FOO, 0666|IPC_CREAT)) < 0) {
         perror ("Can't get Shared Memory ID\n");
         exit (1);
@@ -31,6 +33,7 @@ int main () {
         perror ("Can't attach to Shared Memory\n");
         exit (1);
     }
+    
     shmPtr = shmTurnPtr + sizeof(int);
     *shmTurnPtr = 0;
 
@@ -39,14 +42,19 @@ int main () {
         fgets(enteredString, MAXMESSAGESIZE, stdin);
         enteredString[strcspn(enteredString, "\n")] = 0;
         strcpy(shmPtr, enteredString);
-        //printf("Writer turn [%d]\n", *shmTurnPtr);
+        printf("Writer turn [%d]\n", *shmTurnPtr+1);
         printf("String [%s] written to Shared Memory\n", shmPtr);
         shmPtr = shmPtr + MAXMESSAGESIZE; //incrementing the shared address by size of maxsizse
         limiter = limiter + MAXMESSAGESIZE;
-        if (limiter >= 4095) {
-            //limiter = sizeof(int);
-            //shmPtr = limiter;
+        if (*shmTurnPtr >= 126) {
+            *shmTurnPtr = 0;
         }
+        // printf("LIMIT: [%d]\n", limiter);
+        // if (limiter >= 4095) {
+        //     printf("limit hit!\n");
+        //     limiter = sizeof(int);
+        //     shmPtr = shmTurnPtr + sizeof(int);
+        // }
         *shmTurnPtr =  *shmTurnPtr + 1; //incrementing the turn int by 1
     } while(1);
 }
