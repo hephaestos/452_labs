@@ -77,5 +77,10 @@ int main (int argc, char* argv[])
       exit(1);
    }
 
+   if (semctl (semId, 0, IPC_RMID) < 0) {
+      perror("failed to remove semaphore\n");
+      exit(1);
+   }
+
    return 0;
 }
