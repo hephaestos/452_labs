@@ -6,18 +6,29 @@
 #include <sys/ipc.h>
 #include <sys/shm.h>
 #include <sys/stat.h>
+#include <sys/sem.h>
 
 #define SIZE 16
 
 int main (int argc, char* argv[])
 {
    int status;
-   long int i, loop, temp, *shmPtr;
-   int shmId;
+   long int i, temp, *shmPtr;
+   int shmId, semId;
    pid_t pid;
 
     // get value of loop variable (from command-line argument)
-    loop = atoi(argv[1]);
+    long int loop = atoi(argv[1]);
+
+   if ((semId = semget (IPC_PRIVATE, 1, 00600)) < 0) {
+      perror("failed to create semaphore\n");
+      exit(1);
+   }
+
+   if (semctl (semId, 0, SETVAL, 1) < 0) {
+      perror("failed to initialize the semaphore\n");
+      exit(1);
+   }
 
    if ((shmId = shmget (IPC_PRIVATE, SIZE, IPC_CREAT|S_IRUSR|S_IWUSR)) < 0) {
       perror ("i can't get no..\n");
@@ -27,6 +38,8 @@ int main (int argc, char* argv[])
       perror ("can't attach\n");
       exit (1);
    }
+
+   printf("SETVAL [%d]\n", SETVAL);
 
    shmPtr[0] = 0;
    shmPtr[1] = 1;
