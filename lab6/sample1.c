@@ -17,8 +17,11 @@ int main (int argc, char* argv[])
    int shmId, semId;
    pid_t pid;
 
-    // get value of loop variable (from command-line argument)
-    long int loop = atoi(argv[1]);
+   // get value of loop variable (from command-line argument)
+   long int loop = atoi(argv[1]);
+
+   struct sembuf sem_wait = { 0, -1, SEM_UNDO };
+   struct sembuf sem_signal = { 0, +1, SEM_UNDO };
 
    if ((semId = semget (IPC_PRIVATE, 1, 00600)) < 0) {
       perror("failed to create semaphore\n");
@@ -39,17 +42,23 @@ int main (int argc, char* argv[])
       exit (1);
    }
 
-   printf("SETVAL [%d]\n", SETVAL);
-
    shmPtr[0] = 0;
    shmPtr[1] = 1;
 
-   if (!(pid = fork())) {
+   if (!(pid = fork())) { // child
       for (i=0; i<loop; i++) {
+               if(semop(semId, &sem_wait, 1) < 0){
+                  perror("semop wait failed\n");
+                  exit(1);
+               }
                // swap the contents of shmPtr[0] and shmPtr[1]
                temp = shmPtr[0];
                shmPtr[0] = shmPtr[1];
                shmPtr[1] = temp;
+               if(semop(semId, &sem_signal, 1) < 0){
+                  perror("semop signal failed\n");
+                  exit(1);
+               }
       }
       if (shmdt (shmPtr) < 0) {
          perror ("just can't let go\n");
@@ -57,12 +66,20 @@ int main (int argc, char* argv[])
       }
       exit(0);
    }
-   else
+   else // parent
       for (i=0; i<loop; i++) {
+               if(semop(semId, &sem_wait, 1) < 0){
+                  perror("semop wait failed\n");
+                  exit(1);
+               }
                // swap the contents of shmPtr[1] and shmPtr[0]
                temp = shmPtr[0];
                shmPtr[0] = shmPtr[1];
                shmPtr[1] = temp;
+               if(semop(semId, &sem_signal, 1) < 0){
+                  perror("semop signal failed\n");
+                  exit(1);
+               }
       }
 
    wait (&status);
