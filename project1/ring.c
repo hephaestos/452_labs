@@ -36,12 +36,13 @@ int main() {
 
     struct apple {
         int destination;
-        char *message;
+        char message[MAX_MESSAGE_SIZE];
     };
 
     blue_fputs("How many processes should be created: ", stdout);
     // Get the number of processes from the user
-    fgets(number_of_processes, 3, stdin);
+    fgets(number_of_processes, 5, stdin);
+    number_of_processes[strcspn(number_of_processes, "\n")] = 0;
     if(!(n_processes = atoi(number_of_processes))) {
         fail("Invalid input", 1);
     }
@@ -91,9 +92,29 @@ int main() {
                 read_fd = i;
                 write_fd = i+1;
             }
+            struct apple the_apple;
+            read(pipes[read_fd][READ], &the_apple, sizeof(the_apple));
+            printf("Node #%d (pid=%d) recieved the apple...\n", i+1, getpid());
+            //sleep(1); //TODO uncomment this
+            if(the_apple.destination != i-1) {
+                if(the_apple.destination == 0) {
+                    printf("Messaged already recieved. Sending apple home...\n");
+                } else {
+                    printf("Not the destination, passing it on...\n");
+                }
+                write(pipes[write_fd][WRITE], &the_apple, sizeof(the_apple));
+            } else if(the_apple.destination == i-1) {
+                if(the_apple.destination == 0) {
+                    printf("Apple returned home. We're done here.\n");
+                    
+                    exit(0);
+                }
+                printf("Received message: %s\n", the_apple.message);
+                the_apple.destination = 0;
+                write(pipes[write_fd][WRITE], &the_apple, sizeof(the_apple));
+            }
+
             exit(0); // Don't keep the loop running in the child process
-        // Parent process
-        } else {
         }
     }
     puts("Done setting up child processes. Creating signal handler...");
@@ -106,24 +127,22 @@ int main() {
     struct apple the_apple;
 
     blue_fputs("Destination node: ", stdout);
-    fgets(destination_process, 3, stdin);
+    fgets(destination_process, 5, stdin);
+    destination_process[strcspn(destination_process, "\n")] = 0;
 
-    if(!(the_apple.destination = atoi(destination_process))) {
+    if(!(the_apple.destination = atoi(destination_process) - 1)) { // We subtract 1 so that the nodes are not zero indexed for the user
         fail("Destination process must be a valid number", 1);
     }
-    if(the_apple.destination > n_processes) {
+    if(the_apple.destination > n_processes || the_apple.destination < 1) {
         fail("Invalid destination process", 1);
     }
 
     blue_fputs("Message: ", stdout);
     fgets(message, MAX_MESSAGE_SIZE, stdin);
-    the_apple.message = malloc(MAX_MESSAGE_SIZE * sizeof(*the_apple.message));
+    message[strcspn(message, "\n")] = 0;
     strcpy(the_apple.message, message);
 
-    fputs("Sending message to node ", stdout);
-    fputs(destination_process, stdout);
-    fputs("Message: ", stdout);
-    fputs(the_apple.message, stdout);
+    write(pipes[0][WRITE], &the_apple, sizeof(the_apple));
 
     while(!time_to_die) {
         pause();
