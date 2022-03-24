@@ -18,6 +18,10 @@ int main() {
     if(ferror(stdin)) {
         perror("Failed to read input\n");
     }
+    printf("size Address: %p\n", size);
+    printf("data1 Address: %x\n", &data1);
+    printf("len Address: %p\n", len);
+    printf("read Address: %p\n", read);
     free(data1);
     return 0;
 }
