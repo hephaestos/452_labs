@@ -6,7 +6,7 @@
 
 int main() {
     char *data1;
-    size_t len = 0;
+    size_t len = 16;
     ssize_t read;
 
     data1 = malloc(SIZE);
