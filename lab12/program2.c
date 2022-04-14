@@ -28,12 +28,12 @@ int main() {
     struct dirent *entryPtr;
 
     dirPtr = opendir (".");
-
-
     while ((entryPtr = readdir (dirPtr))) {
         struct stat fileStat;
         stat(entryPtr->d_name, &fileStat);
-        printf ("%ld: %-20s\n", fileStat.st_size, entryPtr->d_name);
+        char size[8];
+        humanize(fileStat.st_size, size);
+        printf ("%-8s: %-20s\n", size, entryPtr->d_name);
     }
 
     closedir (dirPtr);
