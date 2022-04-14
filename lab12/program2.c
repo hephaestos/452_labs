@@ -31,9 +31,9 @@ int main() {
     while ((entryPtr = readdir (dirPtr))) {
         struct stat fileStat;
         stat(entryPtr->d_name, &fileStat);
-        char size[8];
+        char size[5];
         humanize(fileStat.st_size, size);
-        printf ("%-8s: %-20s\n", size, entryPtr->d_name);
+        printf ("%-5s- %-20s\n", size, entryPtr->d_name);
     }
 
     closedir (dirPtr);
