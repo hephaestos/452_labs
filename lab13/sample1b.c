@@ -28,27 +28,34 @@ int main(int argc, char *argv[]){
     fileLock.l_start = 0;    
     fileLock.l_len = 0;    
 
-    // if (fcntl (fd, F_GETLK, &fileLock) < 0) {       
-    //     perror ("Unable to obtain lock");       
-    //     exit (1);    
-    // }
-    // else{
-    //     printf("Lock acquired\n");
-    // }
-
-    //printf("%u\n", fcntl(fd, F_GETLK, &fileLock));
-
-    while(fcntl(fd, F_SETLK, &fileLock) > 0){
+    while(fcntl(fd, F_SETLK, &fileLock) < 0){
         printf("Unable to aquire\n");
         sleep(1);
     }
 
     printf("Lock Aquired\n");
 
-    //printf("Past Loop\n");  
     
-    //write (fd, buf, SIZE-2);    
-    //sleep (10);    
+    char c[1000];
+
+    FILE *fptr;
+
+    if ((fptr = fopen(argv[1], "r")) == NULL) {
+
+        printf("Error! File cannot be opened.");
+        // Program exits if the file pointer returns NULL.
+        exit(1);
+    }
+
+    // reads text until newline is encountered
+
+    fscanf(fptr, "%[^\n]", c);
+
+    printf("Data from the file:\n%s", c);
+
+    fclose(fptr);
+
+
     close(fd);    
     return 0;
-} 
+}
