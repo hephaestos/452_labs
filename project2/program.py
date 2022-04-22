@@ -1,23 +1,8 @@
 import time
-MEMORY_SIZE = 100
-
-class Process:
-    def __init__(self, num, size, runTime):
-        self.num = num
-        self.size = size
-        self.runTime = runTime
-
-    def __str__(self):
-        return f'Process #:{self.num} Memory size:{self.size} Runtime remaining:{self.runTime}'
-
-class Allocation:
-    def __init__(self, process, start, end):
-        self.process = process
-        self.start = start
-        self.end = end
-
-    def __str__(self):
-        return f'Process #:{self.process.num} Runtime remaining:{self.process.runTime} Start:{self.start} End:{self.end}'
+from process import Process
+from allocation import Allocation
+import gui
+MEMORY_SIZE = 50
 
 def firstFit(process, allocations):
     start = 0
@@ -51,16 +36,21 @@ def scheduler(processQueue, algorithm):
                 processQueue.insert(0,nextProcess)
         for allocation in allocations:
             print(allocation)
+            gui.addToGUI(allocation)
         print("------------------------------------------")
         time.sleep(1)
 
-if __name__ == '__main__':
+def main():
     processes = [
-        Process(1, 70, 2),
+        Process(1, 40, 2),
         Process(2, 10, 5),
         Process(3, 25, 3),
         Process(4, 40, 4),
         Process(5, 5, 4),
         Process(6, 10, 2),
     ]
+    gui.InitGUI()
     scheduler(processes, firstFit)
+
+if __name__ == '__main__':
+    main()

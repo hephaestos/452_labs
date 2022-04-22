@@ -1,4 +1,6 @@
 from tkinter import *
+from process import Process
+from allocation import Allocation
 import time
 
 # generating GUI and canvas
@@ -10,35 +12,17 @@ grey = '#bebebe'
 canvas = Canvas(root, width=1150, height=625, bg=grey)
 canvas.pack()
 
-# gui boxes for first fit list
-firstfitguilist = []
-firstfitguilist = [None] * 20
+def addToGUI(allocation):
+    malloc = allocation.start
+    size = allocation.process.size
+    num = allocation.process.num
 
-firstfitmalloc = 0
-
-class Process:
-
-    def __init__(self, num, size):
-        self.num = num
-        self.size = size
-        runtime = 3
-
-    def tostring(self):
-        print('Process #:', self.num, 'Process size:', self.size)
-
-
-def addtofirstfitgui(process, guilist, malloc):
-    size = process.size
-    num = process.num
-
-    guilist[num] = canvas.create_rectangle(350, 85 + (10 * malloc), 485, 85 + (10 * (malloc + size)), fill="black")
+    canvas.create_rectangle(350, 85 + (10 * malloc), 485, 85 + (10 * (malloc + size)), fill="black")
     printstring = "Proc " + str(num) + " Size " + str(size)
     canvas.create_text(415, 95 + (10 * malloc + size), text=printstring, fill="white", font=('Helvetica 13'))
 
     root.update_idletasks()
     root.update()
-
-    return firstfitmalloc + size
 
 
 def InitGUI():
@@ -74,26 +58,24 @@ def InitGUI():
 
 # main program starts here
 
-InitGUI()
+# ProcArray = []
+# ProcArray.append(Process(0, 5))
+# ProcArray.append(Process(1, 7))
+# ProcArray.append(Process(2, 8))
+# ProcArray.append(Process(3, 10))
+# ProcArray.append(Process(4, 4))
+# time.sleep(1)
 
-ProcArray = []
-ProcArray.append(Process(0, 5))
-ProcArray.append(Process(1, 7))
-ProcArray.append(Process(2, 8))
-ProcArray.append(Process(3, 10))
-ProcArray.append(Process(4, 4))
-time.sleep(1)
+# firstfitmalloc = addtofirstfitgui(ProcArray[0], firstfitguilist, firstfitmalloc)
+# time.sleep(1)
 
-firstfitmalloc = addtofirstfitgui(ProcArray[0], firstfitguilist, firstfitmalloc)
-time.sleep(1)
-
-firstfitmalloc = addtofirstfitgui(ProcArray[1], firstfitguilist, firstfitmalloc)
+# firstfitmalloc = addtofirstfitgui(ProcArray[1], firstfitguilist, firstfitmalloc)
 # time.sleep(1)
 #
 # firstfitmalloc = addtofirstfitgui(ProcArray[2], firstfitguilist, firstfitmalloc)
 # time.sleep(1)
 #
 # firstfitmalloc = addtofirstfitgui(ProcArray[3], firstfitguilist, firstfitmalloc)
-time.sleep(3)
+# time.sleep(3)
 
 # root.mainloop() #uncomment when you dont wanna pause the screen
