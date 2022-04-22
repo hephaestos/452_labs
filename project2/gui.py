@@ -1,27 +1,20 @@
 from tkinter import *
-import random
 import time
 
 # generating GUI and canvas
 root = Tk()
-root.title('Project 2')
+root.title('CIS 452 Dynamic Memory Allocation Project')
+# 16x9 aspect ratio
 root.geometry("1200x675")
 grey = '#bebebe'
 canvas = Canvas(root, width=1150, height=625, bg=grey)
 canvas.pack()
 
-global totalmem
-totalmem = 50
-
-#global firstfitmalloc
-firstfitmalloc = 0
-
 # gui boxes for first fit list
 firstfitguilist = []
 firstfitguilist = [None] * 20
 
-
-
+firstfitmalloc = 0
 
 class Process:
 
@@ -34,43 +27,54 @@ class Process:
         print('Process #:', self.num, 'Process size:', self.size)
 
 
-def addtogui(process, guilist, malloc):
+def addtofirstfitgui(process, guilist, malloc):
     size = process.size
     num = process.num
 
-    guilist[num] = canvas.create_rectangle(x11, ytop + (10 * malloc), x12, ytop + (10 * (malloc + size)) ,fill="black")
+    guilist[num] = canvas.create_rectangle(350, 85 + (10 * malloc), 485, 85 + (10 * (malloc + size)), fill="black")
     printstring = "Proc " + str(num) + " Size " + str(size)
-    canvas.create_text(x11+65, ytop + (10*malloc + size)+10, text=printstring, fill="white", font=('Helvetica 13'))
+    canvas.create_text(415, 95 + (10 * malloc + size), text=printstring, fill="white", font=('Helvetica 13'))
 
     root.update_idletasks()
     root.update()
 
     return firstfitmalloc + size
 
-# my_canvas.create_rectangle(x1, y1, x2, y2 fill ="color")
-# x1, y1: top left
-# x2, y2: bottom right
 
-ybottom = 550
-ytop = ybottom - 500
-xwidth = 135
-x11 = 350
+def InitGUI():
+    # my_canvas.create_rectangle(x1, y1, x2, y2 fill ="color")
+    # x1, y1: top left
+    # x2, y2: bottom right
 
-x12 = x11 + xwidth
-x21 = x11 + 2 * xwidth
-x22 = x21 + xwidth
-x31 = x21 + 2 * xwidth
-x32 = x31 + xwidth
+    # three empty bars
+    canvas.create_rectangle(350, 85, 485, 585, fill="blue")
+    canvas.create_rectangle(620, 85, 755, 585, fill="blue")
+    canvas.create_rectangle(890, 85, 1025, 585, fill="blue")
 
-# three empty bars
-canvas.create_rectangle(x11, ytop, x12, ybottom, fill="blue")
-canvas.create_rectangle(x21, ytop, x22, ybottom, fill="blue")
-canvas.create_rectangle(x31, ytop, x32, ybottom, fill="blue")
+    # label for each bar
+    canvas.create_text(415, 605, text="First Fit", fill="black", font=('Helvetica 13'))
+    canvas.create_text(685, 605, text="Best Fit", fill="black", font=('Helvetica 13'))
+    canvas.create_text(955, 605, text="Worst Fit", fill="black", font=('Helvetica 13'))
 
-# label for each bar
-canvas.create_text(x11 + 65, ybottom + 20, text="First Fit", fill="black", font=('Helvetica 13'))
-canvas.create_text(x21 + 65, ybottom + 20, text="Best Fit", fill="black", font=('Helvetica 13'))
-canvas.create_text(x31 + 65, ybottom + 20, text="Worst Fit", fill="black", font=('Helvetica 13'))
+    # left legend
+    canvas.create_rectangle(50, 85, 200, 435, fill="blue")
+    canvas.create_rectangle(55, 90, 195, 235, fill="white")
+    canvas.create_text(120, 100, text="Next Process Size", fill="black", font=('Helvetica 11'))
+    canvas.create_text(109, 120, text="to be allocated:", fill="black", font=('Helvetica 11'))
+
+    canvas.create_text(89, 165, text="First: 50", fill="black", font=('Helvetica 12'))
+    canvas.create_text(90, 190, text="Best: 00", fill="black", font=('Helvetica 12'))
+    canvas.create_text(94, 215, text="Worst: 00", fill="black", font=('Helvetica 12'))
+
+    # title bar
+    canvas.create_text(575, 25, text="CIS 452 Dynamic Memory Allocation Project", fill="black", font=('Helvetica 15'))
+
+    root.update_idletasks()
+    root.update()
+
+# main program starts here
+
+InitGUI()
 
 ProcArray = []
 ProcArray.append(Process(0, 5))
@@ -78,14 +82,18 @@ ProcArray.append(Process(1, 7))
 ProcArray.append(Process(2, 8))
 ProcArray.append(Process(3, 10))
 ProcArray.append(Process(4, 4))
-
-
 time.sleep(1)
 
-firstfitmalloc = addtogui(ProcArray[0], firstfitguilist, firstfitmalloc)
-print(firstfitmalloc)
+firstfitmalloc = addtofirstfitgui(ProcArray[0], firstfitguilist, firstfitmalloc)
 time.sleep(1)
 
-firstfitmalloc = addtogui(ProcArray[1], firstfitguilist, firstfitmalloc)
-print(firstfitmalloc)
-time.sleep(5)
+firstfitmalloc = addtofirstfitgui(ProcArray[1], firstfitguilist, firstfitmalloc)
+# time.sleep(1)
+#
+# firstfitmalloc = addtofirstfitgui(ProcArray[2], firstfitguilist, firstfitmalloc)
+# time.sleep(1)
+#
+# firstfitmalloc = addtofirstfitgui(ProcArray[3], firstfitguilist, firstfitmalloc)
+time.sleep(3)
+
+# root.mainloop() #uncomment when you dont wanna pause the screen
