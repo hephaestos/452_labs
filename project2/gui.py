@@ -20,9 +20,6 @@ firstfitmalloc = 0
 firstfitguilist = []
 firstfitguilist = [None] * 20
 
-# gui boxes for first fit list
-firstfitguilist = []
-firstfitguilist = [None] * 20
 
 
 
