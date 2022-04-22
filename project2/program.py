@@ -1,5 +1,5 @@
 import time
-MEMORY_SIZE = 50
+MEMORY_SIZE = 100
 
 class Process:
     def __init__(self, num, size, runTime):
@@ -22,6 +22,7 @@ class Allocation:
 def firstFit(process, allocations):
     start = 0
     end = 0
+    allocations.sort(key=lambda a: a.start)
     for allocation in allocations:
         end = allocation.start
         if end - start >= process.size:
@@ -55,9 +56,11 @@ def scheduler(processQueue, algorithm):
 
 if __name__ == '__main__':
     processes = [
-        Process(1, 20, 3),
-        Process(2, 10, 4),
-        Process(3, 30, 2),
-        Process(4, 25, 5)
+        Process(1, 70, 2),
+        Process(2, 10, 5),
+        Process(3, 25, 3),
+        Process(4, 40, 4),
+        Process(5, 5, 4),
+        Process(6, 10, 2),
     ]
     scheduler(processes, firstFit)
