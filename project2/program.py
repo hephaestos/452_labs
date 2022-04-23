@@ -1,8 +1,9 @@
 import time
+import asyncio
 from process import Process
 from allocation import Allocation
 import gui
-MEMORY_SIZE = 50
+MEMORY_SIZE = 100
 
 def firstFit(process, allocations):
     start = 0
@@ -20,27 +21,44 @@ def firstFit(process, allocations):
         return True
     return False
 
-def bestFit(nextProcess, allocations):
-    allocations.append(Allocation(nextProcess, 0, 0))
+def bestFit(process, allocations):
+    start = 0
+    end = 0
+    allocations.sort(key=lambda a: a.start)
+    options = []
+    for allocation in allocations:
+        end = allocation.start
+        if end - start >= process.size:
+            options.append(Allocation(process, start, start + process.size))
+        start = allocation.end
+    end = MEMORY_SIZE
+    if end - start >= process.size:
+        options.append(Allocation(process, start, start + process.size))
+    if options:
+        options.sort(key=lambda a: a.end - a.start)
+        allocations.append(options[0])
+        return True
+    return False
 
-def scheduler(processQueue, algorithm):
+async def scheduler(processQueue, algorithm, name):
     allocations = []
     while(processQueue or allocations):
         for allocation in allocations:
             allocation.process.runTime -= 1
             if allocation.process.runTime == 0:
                 allocations.remove(allocation)
+                # gui.removeFromGUI(allocation)
         if(processQueue):
             nextProcess = processQueue.pop(0)
             if not algorithm(nextProcess, allocations):
                 processQueue.insert(0,nextProcess)
         for allocation in allocations:
             print(allocation)
-            gui.addToGUI(allocation)
-        print("------------------------------------------")
-        time.sleep(1)
+            # gui.addToGUI(allocation)
+        print(f"{name}------------------------------------------")
+        await asyncio.sleep(1)
 
-def main():
+async def main():
     processes = [
         Process(1, 40, 2),
         Process(2, 10, 5),
@@ -49,8 +67,11 @@ def main():
         Process(5, 5, 4),
         Process(6, 10, 2),
     ]
-    gui.InitGUI()
-    scheduler(processes, firstFit)
+    # gui.InitGUI()
+    await asyncio.gather(
+        asyncio.create_task(scheduler(processes, firstFit, "ONE")),
+        asyncio.create_task(scheduler(processes, firstFit, "TWO")),
+    )
 
 if __name__ == '__main__':
-    main()
+    asyncio.run(main())
