@@ -42,20 +42,20 @@ def bestFit(process, allocations):
 
 async def scheduler(processQueue, algorithm, name):
     allocations = []
-    while(processQueue or allocations):
+    while processQueue or allocations:
         for allocation in allocations:
             allocation.process.runTime -= 1
             if allocation.process.runTime == 0:
                 allocations.remove(allocation)
-                # gui.removeFromGUI(allocation)
-        if(processQueue):
+                gui.removeFromGUI(allocation, MEMORY_SIZE)
+        if processQueue:
             nextProcess = processQueue.pop(0)
             if not algorithm(nextProcess, allocations):
                 processQueue.insert(0,nextProcess)
         for allocation in allocations:
             print(allocation)
-            # gui.addToGUI(allocation)
-        print(f"{name}------------------------------------------")
+            gui.addToGUI(allocation, MEMORY_SIZE)
+        print("------------------------------------------")
         await asyncio.sleep(1)
 
 async def main():

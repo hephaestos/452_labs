@@ -1,7 +1,4 @@
 from tkinter import *
-from process import Process
-from allocation import Allocation
-import time
 
 # generating GUI and canvas
 root = Tk()
@@ -9,17 +6,28 @@ root.title('CIS 452 Dynamic Memory Allocation Project')
 # 16x9 aspect ratio
 root.geometry("1200x675")
 grey = '#bebebe'
+lightblue = '#ADD8E6'
 canvas = Canvas(root, width=1150, height=625, bg=grey)
 canvas.pack()
+width = 4
 
-def addToGUI(allocation):
+def addToGUI(allocation, memsize):
     malloc = allocation.start
     size = allocation.process.size
     num = allocation.process.num
 
-    canvas.create_rectangle(350, 85 + (10 * malloc), 485, 85 + (10 * (malloc + size)), fill="black")
+    canvas.create_rectangle(350, 85 + ((500/memsize) * malloc), 485, 85 + ((500/memsize) * (malloc + size)), fill='red', width=width)
     printstring = "Proc " + str(num) + " Size " + str(size)
-    canvas.create_text(415, 95 + (10 * malloc + size), text=printstring, fill="white", font=('Helvetica 13'))
+    canvas.create_text(415, 95 + ((500/memsize) * malloc + size), text=printstring, fill="white", font=('Helvetica 13'))
+
+    root.update_idletasks()
+    root.update()
+
+
+def removeFromGUI(allocation, memsize):
+    malloc = allocation.start
+    size = allocation.process.size
+    canvas.create_rectangle(350, 85 + ((500 / memsize) * malloc), 485, 85 + ((500 / memsize) * (malloc + size)), fill="blue", width=width, outline="blue")
 
     root.update_idletasks()
     root.update()
@@ -31,9 +39,9 @@ def InitGUI():
     # x2, y2: bottom right
 
     # three empty bars
-    canvas.create_rectangle(350, 85, 485, 585, fill="blue")
-    canvas.create_rectangle(620, 85, 755, 585, fill="blue")
-    canvas.create_rectangle(890, 85, 1025, 585, fill="blue")
+    canvas.create_rectangle(350, 85, 485, 585, fill="blue", width=width, outline="blue")
+    canvas.create_rectangle(620, 85, 755, 585, fill="blue", width=width, outline="blue")
+    canvas.create_rectangle(890, 85, 1025, 585, fill="blue", width=width, outline="blue")
 
     # label for each bar
     canvas.create_text(415, 605, text="First Fit", fill="black", font=('Helvetica 13'))
@@ -41,8 +49,8 @@ def InitGUI():
     canvas.create_text(955, 605, text="Worst Fit", fill="black", font=('Helvetica 13'))
 
     # left legend
-    canvas.create_rectangle(50, 85, 200, 435, fill="blue")
-    canvas.create_rectangle(55, 90, 195, 235, fill="white")
+    canvas.create_rectangle(50, 85, 200, 435, fill="blue",width=width, outline="blue")
+    canvas.create_rectangle(55, 90, 195, 235, fill="white",width=width, outline="white")
     canvas.create_text(120, 100, text="Next Process Size", fill="black", font=('Helvetica 11'))
     canvas.create_text(109, 120, text="to be allocated:", fill="black", font=('Helvetica 11'))
 
@@ -56,26 +64,3 @@ def InitGUI():
     root.update_idletasks()
     root.update()
 
-# main program starts here
-
-# ProcArray = []
-# ProcArray.append(Process(0, 5))
-# ProcArray.append(Process(1, 7))
-# ProcArray.append(Process(2, 8))
-# ProcArray.append(Process(3, 10))
-# ProcArray.append(Process(4, 4))
-# time.sleep(1)
-
-# firstfitmalloc = addtofirstfitgui(ProcArray[0], firstfitguilist, firstfitmalloc)
-# time.sleep(1)
-
-# firstfitmalloc = addtofirstfitgui(ProcArray[1], firstfitguilist, firstfitmalloc)
-# time.sleep(1)
-#
-# firstfitmalloc = addtofirstfitgui(ProcArray[2], firstfitguilist, firstfitmalloc)
-# time.sleep(1)
-#
-# firstfitmalloc = addtofirstfitgui(ProcArray[3], firstfitguilist, firstfitmalloc)
-# time.sleep(3)
-
-# root.mainloop() #uncomment when you dont wanna pause the screen
