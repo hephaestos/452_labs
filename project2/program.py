@@ -5,62 +5,16 @@ from process import Process
 from allocation import Allocation
 from gui import GUI
 MEMORY_SIZE = 100
+timeUnitsPassed = 0
 
-def firstFit(process, allocations):
-    start = 0
-    end = 0
-    allocations.sort(key=lambda a: a.start)
-    for allocation in allocations:
-        end = allocation.start
-        if end - start >= process.size:
-            allocations.append(Allocation(process, start, start + process.size))
-            return True
-        start = allocation.end
-    end = MEMORY_SIZE
-    if end - start >= process.size:
-        allocations.append(Allocation(process, start, start + process.size))
-        return True
-    return False
+def firstFit(options):
+    pass
 
-def bestFit(process, allocations):
-    start = 0
-    end = 0
-    allocations.sort(key=lambda a: a.start)
-    options = []
-    for allocation in allocations:
-        end = allocation.start
-        if end - start >= process.size:
-            options.append(Allocation(process, start, end))
-        start = allocation.end
-    end = MEMORY_SIZE
-    if end - start >= process.size:
-        options.append(Allocation(process, start, end))
-    if options:
-        options.sort(key=lambda a: (a.end - a.start))
-        options[0].end = options[0].start + process.size
-        allocations.append(options[0])
-        return True
-    return False
+def bestFit(options):
+    options.sort(key=lambda a: (a.end - a.start))
 
-def worstFit(process, allocations):
-    start = 0
-    end = 0
-    allocations.sort(key=lambda a: a.start)
-    options = []
-    for allocation in allocations:
-        end = allocation.start
-        if end - start >= process.size:
-            options.append(Allocation(process, start, end))
-        start = allocation.end
-    end = MEMORY_SIZE
-    if end - start >= process.size:
-        options.append(Allocation(process, start, end))
-    if options:
-        options.sort(key=lambda a: (a.end - a.start), reverse=True)
-        options[0].end = options[0].start + process.size
-        allocations.append(options[0])
-        return True
-    return False
+def worstFit(options):
+    options.sort(key=lambda a: (a.end - a.start), reverse=True)
 
 async def scheduler(processes, algorithm, gui, column):
     processQueue = copy.deepcopy(processes)
@@ -73,13 +27,35 @@ async def scheduler(processes, algorithm, gui, column):
                 gui.removeFromGUI(allocation, column)
         if processQueue:
             nextProcess = processQueue.pop(0)
-            if not algorithm(nextProcess, allocations):
+            start = 0
+            end = 0
+            allocations.sort(key=lambda a: a.start)
+            options = []
+            for allocation in allocations:
+                end = allocation.start
+                if end - start >= nextProcess.size:
+                    options.append(Allocation(nextProcess, start, end))
+                start = allocation.end
+            end = MEMORY_SIZE
+            if end - start >= nextProcess.size:
+                options.append(Allocation(nextProcess, start, end))
+            if options:
+                algorithm(options) 
+                options[0].end = options[0].start + nextProcess.size
+                allocations.append(options[0])
+            else:
                 processQueue.insert(0,nextProcess)
+
         for allocation in allocations:
             print(allocation)
             gui.addToGUI(allocation, column)
         print("------------------------------------------")
         await asyncio.sleep(1)
+
+async def updateClock(gui):
+    timeUnitsPassed += 1
+    gui.updateTimeGUI(timeUnitsPassed)
+    await asyncio.sleep(1)
 
 async def main():
     processes = [
@@ -93,6 +69,7 @@ async def main():
         asyncio.create_task(scheduler(processes, firstFit, g, 1)),
         asyncio.create_task(scheduler(processes, bestFit, g, 2)),
         asyncio.create_task(scheduler(processes, worstFit, g, 3))
+        asyncio.create_task(updateClock(g))
     )
 
 if __name__ == '__main__':
