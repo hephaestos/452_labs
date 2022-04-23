@@ -1,6 +1,19 @@
+"""
+CIS 452 Project 2: Dynamic Memory Allocation
+Winter 2022
+
+Authors:
+Nick Biesbrock
+Daniel Floyd
+Caleb Poe
+"""
 from tkinter import *
 
 class GUI:
+    """
+    GUI class which handles all the drawing of the boxes and text,
+    and also handles the creation of the window.
+    """
     def __init__(self, memsize):
         self.memsize = memsize
         # generating GUI and canvas
@@ -26,14 +39,9 @@ class GUI:
         # left legend
         self.canvas.create_rectangle(50, 85, 200, 435, fill="blue",width=self.width, outline="blue")
         self.canvas.create_rectangle(55, 90, 195, 235, fill="white",width=self.width, outline="white")
-        self.canvas.create_rectangle(55, 90, 195, 235, fill="white",width=self.width, outline="white")
 
         self.canvas.create_text(120, 100, text="Next Process Size", fill="black", font=('Helvetica 11'))
         self.canvas.create_text(109, 120, text="to be allocated:", fill="black", font=('Helvetica 11'))
-
-        self.canvas.create_text(89, 165, text="First: 50", fill="black", font=('Helvetica 12'))
-        self.canvas.create_text(90, 190, text="Best: 00", fill="black", font=('Helvetica 12'))
-        self.canvas.create_text(94, 215, text="Worst: 00", fill="black", font=('Helvetica 12'))
 
         # title bar
         self.canvas.create_text(575, 25, text="CIS 452 Dynamic Memory Allocation Project", fill="black", font=('Helvetica 15'))
@@ -42,6 +50,7 @@ class GUI:
         self.root.update()
 
     def add(self, allocation, column):
+        """ Add processes to the GUI """
         malloc = allocation.start
         size = allocation.process.size
         num = allocation.process.num
@@ -56,6 +65,7 @@ class GUI:
 
 
     def remove(self, allocation, column):
+        """ Remove processes from the GUI """
         malloc = allocation.start
         size = allocation.process.size
         column = column
@@ -66,10 +76,36 @@ class GUI:
         self.root.update()
 
     def updateTime(self, timeUnitsPassed, column):
-        printstring1 = "Time Passed: " + str(timeUnitsPassed-1)
-        printstring2 = "Time Passed: " + str(timeUnitsPassed)
-        self.canvas.create_text(145+(column*270), 620, text=printstring1, fill=self.grey, font=('Helvetica 12'))
-        self.canvas.create_text(145+(column*270), 620, text=printstring2, fill="black", font=('Helvetica 12'))
+        """ Updates the time units passed for each algorithm """
+        printstring2 = f"Time Passed: {timeUnitsPassed}"
+        text = self.canvas.create_text(145+(column*270), 620, text=printstring2, fill="black", font=('Helvetica 12'))
+        box = self.canvas.create_rectangle(self.canvas.bbox(text),fill=self.grey, width=0)
+        self.canvas.tag_lower(box,text)
+
+        
+        self.root.update_idletasks()
+        self.root.update()
+    
+    def updateNextProcess(self, process, column):
+        """" Updates the next process size to be allocated for each algorithm """
+        if column == 1:
+            firstString = f"First: {process.size:02d}"
+            text = self.canvas.create_text(89, 165, text=firstString, fill="black", font=('Helvetica 12'))
+            box = self.canvas.create_rectangle(self.canvas.bbox(text),fill="white", width=0)
+            self.canvas.tag_lower(box,text)
+        elif column == 2:
+            bestString = f"Best: {process.size:02d}"
+            text = self.canvas.create_text(90, 190, text=bestString, fill="black", font=('Helvetica 12'))
+            box = self.canvas.create_rectangle(self.canvas.bbox(text),fill="white", width=0)
+            self.canvas.tag_lower(box,text)
+        elif column == 3:
+            worstString = f"Worst: {process.size:02d}"
+            text = self.canvas.create_text(94, 215, text=worstString, fill="black", font=('Helvetica 12'))
+            box = self.canvas.create_rectangle(self.canvas.bbox(text),fill="white", width=0)
+            self.canvas.tag_lower(box,text)
 
         self.root.update_idletasks()
         self.root.update()
+
+    def pause(self):
+        self.root.mainloop()

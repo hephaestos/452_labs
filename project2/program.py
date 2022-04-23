@@ -1,4 +1,15 @@
-import time
+"""
+CIS 452 Project 2: Dynamic Memory Allocation
+Winter 2022
+
+Authors:
+Nick Biesbrock
+Daniel Floyd
+Caleb Poe
+
+A GUI that visualized different memory allocation algorithms for process scheduling,
+showing how they schedule processes and how they allocate memory.
+"""
 import copy
 import asyncio
 from process import Process
@@ -16,6 +27,7 @@ def bestFit(options):
 def worstFit(options):
     """ Find the largest gap """
     options.sort(key=lambda a: (a.end - a.start), reverse=True)
+
 class MemoryAllocationVisualizer:
     def __init__(self, memory_size):
         """ Initialize the GUI and memory size"""
@@ -23,6 +35,7 @@ class MemoryAllocationVisualizer:
         self.gui = GUI(self.memory_size)
 
     async def scheduler(self, processes, algorithm, column):
+        """ Schedule the processes using the given algorithm """
         processQueue = copy.deepcopy(processes)
         timeUnitsPassed = 0
         allocations = []
@@ -39,6 +52,7 @@ class MemoryAllocationVisualizer:
             # Allocate the next process in the queue if possible
             if processQueue:
                 nextProcess = processQueue.pop(0)
+                self.gui.updateNextProcess(nextProcess, column)
                 start = 0
                 end = 0
                 allocations.sort(key=lambda a: a.start)
@@ -71,17 +85,32 @@ class MemoryAllocationVisualizer:
             await asyncio.sleep(1)
 
     async def main(self):
+        """ Initialize the process queue and asychronously schedule the processes with each algorithm """
         processes = [
             Process(1, 70, 2),
-            Process(2, 10, 5),
-            Process(3, 10, 5),
-            Process(4, 20, 3),
+            Process(2, 20, 4),
+            Process(3, 5, 7),
+            Process(4, 20, 2),
+            Process(5, 5, 4),
+            Process(6, 15, 3),
+            Process(7, 37, 7),
+            Process(8, 20, 10),
+            Process(9, 22, 5),
+            Process(10, 7, 3),
+            Process(11, 10, 4),
+            Process(12, 20, 4),
+            Process(13, 6, 2),
+            Process(14, 68, 3),
+            Process(15, 7, 6),
+            Process(16, 28, 5),
+            Process(17, 27, 4),
+            Process(18, 35, 5),
+            Process(19, 23, 5),
+            Process(20, 25, 2),
         ]
-        await asyncio.gather(
-            asyncio.create_task(self.scheduler(processes, firstFit, 1)),
-            asyncio.create_task(self.scheduler(processes, bestFit, 2)),
-            asyncio.create_task(self.scheduler(processes, worstFit, 3))
-        )
+        algos = [firstFit, bestFit, worstFit]
+        await asyncio.gather(*[asyncio.create_task(self.scheduler(processes, algo, i+1)) for i, algo in enumerate(algos)])
+        self.gui.pause()
 
 if __name__ == '__main__':
     m = MemoryAllocationVisualizer(memory_size=100)
