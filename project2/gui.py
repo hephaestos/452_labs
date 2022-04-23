@@ -11,23 +11,26 @@ canvas = Canvas(root, width=1150, height=625, bg=grey)
 canvas.pack()
 width = 4
 
-def addToGUI(allocation, memsize):
+def addToGUI(allocation, memsize, column):
     malloc = allocation.start
     size = allocation.process.size
     num = allocation.process.num
+    column = column
 
-    canvas.create_rectangle(350, 85 + ((500/memsize) * malloc), 485, 85 + ((500/memsize) * (malloc + size)), fill='red', width=width)
+    canvas.create_rectangle(80 + (270*column), 85 + ((500/memsize) * malloc), 215 + (270*column), 85 + ((500/memsize) * (malloc + size)), fill='red', width=width)
     printstring = "Proc " + str(num) + " Size " + str(size)
-    canvas.create_text(415, 95 + ((500/memsize) * malloc + size), text=printstring, fill="white", font=('Helvetica 13'))
+    canvas.create_text(145 + (270*column), 95 + ((500/memsize) * malloc + size), text=printstring, fill="white", font=('Helvetica 13'))
 
     root.update_idletasks()
     root.update()
 
 
-def removeFromGUI(allocation, memsize):
+def removeFromGUI(allocation, memsize, column):
     malloc = allocation.start
     size = allocation.process.size
-    canvas.create_rectangle(350, 85 + ((500 / memsize) * malloc), 485, 85 + ((500 / memsize) * (malloc + size)), fill="blue", width=width, outline="blue")
+    column = column
+
+    canvas.create_rectangle(80 + (270*column), 85 + ((500 / memsize) * malloc), 215 + (270*column), 85 + ((500 / memsize) * (malloc + size)), fill="blue", width=width, outline="blue")
 
     root.update_idletasks()
     root.update()
