@@ -8,9 +8,9 @@ class GUI:
         self.root.title('CIS 452 Dynamic Memory Allocation Project')
         # 16x9 aspect ratio
         self.root.geometry("1200x675")
-        grey = '#bebebe'
-        lightblue = '#ADD8E6'
-        self.canvas = Canvas(self.root, width=1150, height=625, bg=grey)
+        self.grey = '#bebebe'
+        self.lightblue = '#ADD8E6'
+        self.canvas = Canvas(self.root, width=1150, height=625, bg=self.grey)
         self.canvas.pack()
         self.width = 4
 
@@ -26,6 +26,8 @@ class GUI:
         # left legend
         self.canvas.create_rectangle(50, 85, 200, 435, fill="blue",width=self.width, outline="blue")
         self.canvas.create_rectangle(55, 90, 195, 235, fill="white",width=self.width, outline="white")
+        self.canvas.create_rectangle(55, 90, 195, 235, fill="white",width=self.width, outline="white")
+
         self.canvas.create_text(120, 100, text="Next Process Size", fill="black", font=('Helvetica 11'))
         self.canvas.create_text(109, 120, text="to be allocated:", fill="black", font=('Helvetica 11'))
 
@@ -39,7 +41,7 @@ class GUI:
         self.root.update_idletasks()
         self.root.update()
 
-    def addToGUI(self, allocation, column):
+    def add(self, allocation, column):
         malloc = allocation.start
         size = allocation.process.size
         num = allocation.process.num
@@ -53,12 +55,21 @@ class GUI:
         self.root.update()
 
 
-    def removeFromGUI(self, allocation, column):
+    def remove(self, allocation, column):
         malloc = allocation.start
         size = allocation.process.size
         column = column
 
         self.canvas.create_rectangle(80 + (270*column), 85 + ((500 / self.memsize) * malloc), 215 + (270*column), 85 + ((500 / self.memsize) * (malloc + size)), fill="blue", width=self.width, outline="blue")
+
+        self.root.update_idletasks()
+        self.root.update()
+
+    def updateTime(self, timeUnitsPassed, column):
+        printstring1 = "Time Passed: " + str(timeUnitsPassed-1)
+        printstring2 = "Time Passed: " + str(timeUnitsPassed)
+        self.canvas.create_text(145+(column*270), 620, text=printstring1, fill=self.grey, font=('Helvetica 12'))
+        self.canvas.create_text(145+(column*270), 620, text=printstring2, fill="black", font=('Helvetica 12'))
 
         self.root.update_idletasks()
         self.root.update()
