@@ -30,14 +30,14 @@ def scheduler(processQueue, algorithm):
             allocation.process.runTime -= 1
             if allocation.process.runTime == 0:
                 allocations.remove(allocation)
-                gui.removeFromGUI(allocation, MEMORY_SIZE)
+                gui.removeFromGUI(allocation, MEMORY_SIZE, 1)
         if processQueue:
             nextProcess = processQueue.pop(0)
             if not algorithm(nextProcess, allocations):
                 processQueue.insert(0,nextProcess)
         for allocation in allocations:
             print(allocation)
-            gui.addToGUI(allocation, MEMORY_SIZE)
+            gui.addToGUI(allocation, MEMORY_SIZE, 1)
         print("------------------------------------------")
         time.sleep(1)
 
